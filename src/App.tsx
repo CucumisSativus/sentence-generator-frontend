@@ -29,7 +29,7 @@ class App extends React.Component<{}, ApplicationState> {
     }));
   }
   render() {
-    let onSubmit = this.generateSentences.bind(this);
+    let onSubmit = (p: GenerateHaikuParams) => this.generateSentences(p);
     return (
       <div className="App container">
         <GenerateHaikuForm
