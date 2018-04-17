@@ -6,50 +6,98 @@ import './components/GenerateHaikuForm';
 import HaikuApi from './api/HaikuApi';
 import HaikuRow from './components/HaikuRow';
 import GenerateHaikuForm from './components/GenerateHaikuForm';
+import CurrentHaikuRow from './components/CurrentHaikuRow';
+import { Maybe } from 'tsmonad';
+import { Container, Row, Col, Navbar, NavbarBrand, Card, CardBody } from 'reactstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 interface ApplicationState {
+  newestHaiku: Maybe<Haiku>;
   generatedHaikus: Array<Haiku>;
 }
 
 class App extends React.Component<{}, ApplicationState> {
   constructor(props: {}) {
     super(props);
-    this.state = { generatedHaikus: [] };
+    this.state = { generatedHaikus: [], newestHaiku: Maybe.nothing<Haiku>() };
   }
   generateSentences(params: GenerateHaikuParams): void {
-    console.log(params);
     HaikuApi.generateHaiku(params).then(haiku => {
-      this.addHaikuToState(haiku);
+      this.state.newestHaiku.map(currentHaiku => {
+        this.addToOldHaiku(currentHaiku);
+      });
+
+      this.setState({ newestHaiku: Maybe.just(haiku) });
     });
   }
 
-  addHaikuToState(haiku: Haiku): void {
+  addToOldHaiku(haiku: Haiku): void {
     this.setState(prevState => ({
       generatedHaikus: [...prevState.generatedHaikus, haiku]
     }));
   }
+
   render() {
     let onSubmit = (p: GenerateHaikuParams) => this.generateSentences(p);
     return (
-      <div className="App container">
-        <GenerateHaikuForm
-          onSubmit={onSubmit}
-        />
-        <ul>
-        {this.state.generatedHaikus.map(haiku => {
-          return (
-            <li key={haiku.firstLine}>
-              <HaikuRow
+      <Container fluid={true}>
+        <div className="App container">
+          <Navbar>
+            <NavbarBrand>
+              Generator Haiku
+          </NavbarBrand>
+          </Navbar>
 
-                firstLine={haiku.firstLine}
-                middleLine={haiku.middleLine}
-                lastLine={haiku.lastLine}
-              />
-            </li>
-          );
-        })}
-        </ul>
-      </div>
+          <Row>
+            <Col>
+              {this.state.newestHaiku.map(haiku => {
+                return (
+                  <CurrentHaikuRow
+                    key={haiku.firstLine}
+                    firstLine={haiku.firstLine}
+                    middleLine={haiku.middleLine}
+                    lastLine={haiku.lastLine}
+                  />
+                );
+              }).caseOf({
+                just: s => s,
+                nothing: () => <p />
+              })}
+              <Row>
+                <Col>
+                  <GenerateHaikuForm
+                    onSubmit={onSubmit}
+                  />
+                </Col>
+              </Row>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+            <Row>
+              {this.state.generatedHaikus.map(haiku => {
+                return (
+                  
+                    <Col key={haiku.firstLine} md={4}>
+                      <Card>
+                        <CardBody>
+                          <HaikuRow
+
+                            firstLine={haiku.firstLine}
+                            middleLine={haiku.middleLine}
+                            lastLine={haiku.lastLine}
+                          />
+                        </CardBody>
+                      </Card>
+                    </Col>
+                  
+                );
+              })}
+              </Row>
+            </Col>
+          </Row>
+        </div>
+      </Container>
     );
   }
 }

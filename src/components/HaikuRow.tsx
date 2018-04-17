@@ -4,9 +4,9 @@ class HaikuRow extends React.Component<Haiku, {}> {
     render() {
         return (
             <div>
-                <p>{this.props.firstLine}</p>
-                <p>{this.props.middleLine}</p>
-                <p>{this.props.lastLine}</p>
+                <h4>{this.props.firstLine}</h4>
+                <h4>{this.props.middleLine}</h4>
+                <h4>{this.props.lastLine}</h4>
             </div>
         );
     }
