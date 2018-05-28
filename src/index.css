@@ -3,3 +3,14 @@ body {
   padding: 0;
   font-family: sans-serif;
 }
+.example-print {
+  display: none;
+}
+@media print {
+  .example-screen {
+      display: none;
+   }
+   .example-print {
+      display: block;
+   }
+}
