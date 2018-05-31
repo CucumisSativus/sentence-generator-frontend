@@ -5,7 +5,7 @@ import { Button } from 'reactstrap';
 class GenerateHaikuForm extends React.Component<GenerateHaikuFormProps, {}> {
     render() {
         return (
-            <Button color="primary" size="lg" onClick={this.props.onSubmit} > Generuj Sztukę </Button>
+            <Button color="primary" size="lg" onClick={this.props.onSubmit} > Generuj Haiku </Button>
         );
     }
 }
