@@ -5,35 +5,55 @@ import './domain/Haiku';
 import './components/GenerateHaikuForm';
 import HaikuApi from './api/HaikuApi';
 import GenerateHaikuForm from './components/GenerateHaikuForm';
-import CurrentHaikuRow from './components/CurrentHaikuRow';
+import HaikuRow from './components/CurrentHaikuRow';
 import { Maybe } from 'tsmonad';
-import { Container, Row, Col, Navbar, NavbarBrand, Button } from 'reactstrap';
+import { Container, Row, Col, Navbar, NavbarBrand, Button, Card, CardBody } from 'reactstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 interface ApplicationState {
   newestHaiku: Maybe<Haiku>;
+  generatedHaikus: Array<Haiku>;
 }
 
 class App extends React.Component<{}, ApplicationState> {
   constructor(props: {}) {
     super(props);
-    this.state = { newestHaiku: Maybe.nothing<Haiku>() };
+    this.state = { generatedHaikus: [], newestHaiku: Maybe.nothing<Haiku>() };
   }
+
+  componentWillMount() {
+    HaikuApi.getHaikuList().then(haikus =>
+      this.setState({ generatedHaikus: haikus })
+    );
+  }
+
   generateSentences(params: GenerateHaikuParams): void {
     HaikuApi.generateHaiku(params).then(haiku => {
       this.setState({ newestHaiku: Maybe.just(haiku) });
     });
   }
 
+  addToOldHaiku(haiku: Haiku): void {
+    this.setState(prevState => ({
+      generatedHaikus: [...prevState.generatedHaikus, haiku]
+    }));
+  }
+  saveHaiku(haiku: Haiku): void {
+    HaikuApi.saveHaiku(haiku).then(h => this.addToOldHaiku(h));
+  }
+
+  onHaikuEdited(haiku: Haiku) {
+    console.log(haiku);
+  }
+
   renderCurrentHaikuRow() {
     return this.state.newestHaiku.map(haiku => {
       return (
-        <CurrentHaikuRow
+        <HaikuRow
           key={haiku.id}
-          id={haiku.id}
-          firstLine={haiku.firstLine}
-          middleLine={haiku.middleLine}
-          lastLine={haiku.lastLine}
+          haiku={haiku}
+          onHaikuEdited={(h) => this.onHaikuEdited(h)}
+          bootstrapSize="h1"
         />
       );
     }).caseOf({
@@ -47,6 +67,39 @@ class App extends React.Component<{}, ApplicationState> {
       just: () => <Button color="info" onClick={() => window.print()}>Drukuj</Button>,
       nothing: () => <span />
     });
+  }
+  renderSaveButton() {
+    return this.state.newestHaiku.bind(haiku => {
+      if (this.state.generatedHaikus.indexOf(haiku) > -1) {
+        return Maybe.nothing<Haiku>();
+      } else {
+        return Maybe.just(haiku);
+      }
+    }).caseOf({
+      just: haiku => <Button color="info" onClick={() => this.saveHaiku(haiku)}>Zapisz</Button>,
+      nothing: () => <span />
+    });
+  }
+
+  renderSavedHaikus() {
+    let haikus = this.state.generatedHaikus.map(haiku => {
+      return (
+        <Card key={haiku.id}>
+          <CardBody>
+            <HaikuRow
+              haiku={haiku}
+              onHaikuEdited={(h) => this.onHaikuEdited(h)}
+              bootstrapSize="h3"
+            />
+          </CardBody>
+        </Card>
+      );
+    });
+    return (
+      <Col>
+        {haikus}
+      </Col>
+    );
   }
   render() {
     let onSubmit = (p: GenerateHaikuParams) => this.generateSentences(p);
@@ -73,6 +126,14 @@ class App extends React.Component<{}, ApplicationState> {
                     <Col>
                       {this.renderPrintButton()}
                     </Col>
+                    <Col>
+                      {this.renderSaveButton()}
+                    </Col>
+                  </Row>
+                </Col>
+                <Col>
+                  <Row>
+                    {this.renderSavedHaikus()}
                   </Row>
                 </Col>
               </Row>

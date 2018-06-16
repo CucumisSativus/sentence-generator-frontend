@@ -23,6 +23,29 @@ const HaikuApi = {
                 resolve(resp.data as Haiku);
             }).catch(exception => {
                 console.log(exception);
+                reject(exception);
+            });
+        }));
+    },
+
+    getHaikuList(): Promise<Array<Haiku>> {
+        return(new Promise((resolve, reject) => {
+            ApiBase.get('haikus').then(resp =>
+                resolve(resp.data as Array<Haiku>)
+            ).catch(exception => {
+                console.log(exception);
+                reject(exception);
+            });
+        }));
+    },
+
+    saveHaiku(haiku: Haiku): Promise<Haiku> {
+        return(new Promise((resolve, reject) => {
+            ApiBase.post('save-haiku', haiku).then(resp =>
+                resolve(haiku)
+            ).catch(exception => {
+                console.log(exception);
+                reject(exception);
             });
         }));
     }
