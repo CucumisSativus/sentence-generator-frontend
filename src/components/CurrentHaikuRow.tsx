@@ -1,15 +1,31 @@
 import * as React from 'react';
-import '../domain/Haiku';
-class CurrentHaikuRow extends React.Component<Haiku, {}> {
+import HaikuRowProps from '../domain/HaikuRowProps';
+
+class HaikuRow extends React.Component<HaikuRowProps, {}> {
+
+    renderHaiku() {
+        let haiku = this.props.haiku;
+        return (
+            <div>
+                {this.renderLine(haiku.firstLine)}
+                {this.renderLine(haiku.middleLine)}
+                {this.renderLine(haiku.lastLine)}
+            </div>
+        );
+    }
+    renderLine(line: string) {
+        return (
+            <p className={this.props.bootstrapSize}>{line}</p>
+        );
+    }
+
     render() {
         return (
             <div>
-                <h1 className="display-3">{this.props.firstLine}</h1>
-                <h1 className="display-3">{this.props.middleLine}</h1>
-                <h1 className="display-3">{this.props.lastLine}</h1>
+                {this.renderHaiku()}
             </div>
         );
     }
 }
 
-export default CurrentHaikuRow;
+export default HaikuRow;
