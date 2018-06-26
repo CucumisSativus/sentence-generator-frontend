@@ -111,27 +111,45 @@ class App extends React.Component<{}, ApplicationState> {
         <div className="example-screen">
           <Container fluid={true}>
             <div className="App container">
-              <Navbar>
-                <NavbarBrand>Generator Haiku</NavbarBrand>
+              <Navbar className="sticky-top">
+                <NavbarBrand>W. I. X. A. Generator</NavbarBrand>
               </Navbar>
               <Row>
                 <Col>
-                  {this.renderCurrentHaikuRow()}
+                  <div className="fixed-div">
+                    <Row>
+                      <Col>
+                        <h1>Haiku</h1>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col>
+                        {this.renderCurrentHaikuRow()}
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col>
+                        <GenerateHaikuForm
+                          onSubmit={onSubmit}
+                        />
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col>
+                        {this.renderPrintButton()}
+                      </Col>
+                      <Col>
+                        {this.renderSaveButton()}
+                      </Col>
+                    </Row>
+                  </div>
+                </Col>
+                <Col className="scrollable">
                   <Row>
                     <Col>
-                      <GenerateHaikuForm
-                        onSubmit={onSubmit}
-                      />
-                    </Col>
-                    <Col>
-                      {this.renderPrintButton()}
-                    </Col>
-                    <Col>
-                      {this.renderSaveButton()}
+                      <h1>Baza tekstów</h1>
                     </Col>
                   </Row>
-                </Col>
-                <Col>
                   <Row>
                     {this.renderSavedHaikus()}
                   </Row>

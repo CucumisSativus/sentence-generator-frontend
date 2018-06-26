@@ -14,3 +14,19 @@ body {
       display: block;
    }
 }
+
+@media (min-width: 768px){
+  #right {
+    height: 100%;
+    overflow-y: scroll;
+  }
+}
+
+
+.scrollable{
+  height: 100vh;
+  /* margin-bottom: 10px; */
+  overflow:scroll;
+  overflow: -moz-scrollbars-vertical; 
+  /* -webkit-overflow-scrolling: touch; */
+}
