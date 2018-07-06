@@ -22,6 +22,9 @@ body {
   }
 }
 
+.fixed-div{
+  margin-top: 10%;
+}
 
 .scrollable{
   height: 100vh;

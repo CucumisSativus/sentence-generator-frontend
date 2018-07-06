@@ -22,11 +22,16 @@ class App extends React.Component<{}, ApplicationState> {
   }
 
   componentWillMount() {
+    this.refreshHaikuList();
+    setInterval(() => this.refreshHaikuList, 5000);
+  }
+
+  refreshHaikuList() {
+    console.log('refreshing haikus');
     HaikuApi.getHaikuList().then(haikus =>
       this.setState({ generatedHaikus: haikus })
     );
   }
-
   generateSentences(params: GenerateHaikuParams): void {
     HaikuApi.generateHaiku(params).then(haiku => {
       this.setState({ newestHaiku: Maybe.just(haiku) });
@@ -35,7 +40,7 @@ class App extends React.Component<{}, ApplicationState> {
 
   addToOldHaiku(haiku: Haiku): void {
     this.setState(prevState => ({
-      generatedHaikus: [...prevState.generatedHaikus, haiku]
+      generatedHaikus: [haiku, ...prevState.generatedHaikus]
     }));
   }
   saveHaiku(haiku: Haiku): void {
@@ -112,16 +117,12 @@ class App extends React.Component<{}, ApplicationState> {
           <Container fluid={true}>
             <div className="App container">
               <Navbar className="sticky-top">
-                <NavbarBrand>W. I. X. A. Generator</NavbarBrand>
+                <NavbarBrand>Wystawa Interaktywnej Xemantyki Automatycznej: Generator Haiku</NavbarBrand>
               </Navbar>
               <Row>
                 <Col>
                   <div className="fixed-div">
-                    <Row>
-                      <Col>
-                        <h1>Haiku</h1>
-                      </Col>
-                    </Row>
+                    <Row/>
                     <Row>
                       <Col>
                         {this.renderCurrentHaikuRow()}
@@ -147,7 +148,7 @@ class App extends React.Component<{}, ApplicationState> {
                 <Col className="scrollable">
                   <Row>
                     <Col>
-                      <h1>Baza tekstów</h1>
+                      <h1>Baza Xemantycznych Haiku</h1>
                     </Col>
                   </Row>
                   <Row>
