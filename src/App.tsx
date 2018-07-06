@@ -23,7 +23,7 @@ class App extends React.Component<{}, ApplicationState> {
 
   componentWillMount() {
     this.refreshHaikuList();
-    setInterval(() => this.refreshHaikuList, 5000);
+    setInterval(this.refreshHaikuList.bind(this), 5000);
   }
 
   refreshHaikuList() {
