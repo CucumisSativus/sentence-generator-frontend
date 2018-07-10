@@ -107,6 +107,29 @@ class App extends React.Component<{}, ApplicationState> {
       </Col>
     );
   }
+
+  renderInstruction() {
+    return (
+      <p className="some-text">
+        Przycisk 'GENERUJ HAIKU' pozwala oglądającemu wystawę,
+        a więc Automatycznemu Twórcy, wygenerować odpowiedni tekst.
+        Od niego zależy, który tekst zostanie zapisany i ostatecznie uznany za 'Dzieło'.
+        Zapisane Teksty Xemantyczne są dostępne i aktualizowane w czasie rzeczywistym w Bazie Xemantycznych Haiku,
+        którą można przeglądać po prawej stronie ekranu.
+      Haiku sobie również wydrukować, korzystając z opcji 'DRUKUJ'.
+      </p>
+    );
+  }
+
+  renderCredo() {
+    return (
+      <blockquote className="blockquote-reverse blue some-text">
+        <p>I jeśli gra się wciąż sto, tysiąc, sto tysięcy lat, to wedle wszelkiego
+          prawdopodobieństwa kiedyś przypadkiem musi z tego wyjść wiersz.</p>
+        <footer>Ende Michale 'Niekończąca się historia'</footer>
+      </blockquote>
+    );
+  }
   render() {
     let onSubmit = (p: GenerateHaikuParams) => this.generateSentences(p);
     return (
@@ -122,8 +145,10 @@ class App extends React.Component<{}, ApplicationState> {
               </Navbar>
               <Row>
                 <Col>
+                  <Row>
+                    {this.renderCredo()}
+                  </Row>
                   <div className="fixed-div">
-                    <Row/>
                     <Row>
                       <Col>
                         {this.renderCurrentHaikuRow()}
@@ -145,6 +170,11 @@ class App extends React.Component<{}, ApplicationState> {
                       </Col>
                     </Row>
                   </div>
+                  <Row />
+
+                  <Row className="instruction">
+                    {this.renderInstruction()}
+                  </Row>
                 </Col>
                 <Col className="scrollable">
                   <Row>
