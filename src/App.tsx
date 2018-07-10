@@ -13,29 +13,35 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 interface ApplicationState {
   newestHaiku: Maybe<Haiku>;
   generatedHaikus: Array<Haiku>;
+  showSaveButton: boolean;
 }
 
 class App extends React.Component<{}, ApplicationState> {
   constructor(props: {}) {
     super(props);
-    this.state = { generatedHaikus: [], newestHaiku: Maybe.nothing<Haiku>() };
+    this.state = { generatedHaikus: [], newestHaiku: Maybe.nothing<Haiku>(), showSaveButton: false };
   }
 
   componentWillMount() {
+    this.refreshHaikuList();
+    setInterval(this.refreshHaikuList.bind(this), 5000);
+  }
+
+  refreshHaikuList() {
+    console.log('refreshing haikus');
     HaikuApi.getHaikuList().then(haikus =>
       this.setState({ generatedHaikus: haikus })
     );
   }
-
   generateSentences(params: GenerateHaikuParams): void {
     HaikuApi.generateHaiku(params).then(haiku => {
-      this.setState({ newestHaiku: Maybe.just(haiku) });
+      this.setState({ newestHaiku: Maybe.just(haiku), showSaveButton: true });
     });
   }
 
   addToOldHaiku(haiku: Haiku): void {
     this.setState(prevState => ({
-      generatedHaikus: [...prevState.generatedHaikus, haiku]
+      generatedHaikus: [haiku, ...prevState.generatedHaikus], showSaveButton: false
     }));
   }
   saveHaiku(haiku: Haiku): void {
@@ -70,7 +76,7 @@ class App extends React.Component<{}, ApplicationState> {
   }
   renderSaveButton() {
     return this.state.newestHaiku.bind(haiku => {
-      if (this.state.generatedHaikus.indexOf(haiku) > -1) {
+      if (!this.state.showSaveButton) {
         return Maybe.nothing<Haiku>();
       } else {
         return Maybe.just(haiku);
@@ -101,6 +107,29 @@ class App extends React.Component<{}, ApplicationState> {
       </Col>
     );
   }
+
+  renderInstruction() {
+    return (
+      <p className="some-text">
+        Przycisk 'GENERUJ HAIKU' pozwala oglądającemu wystawę,
+        a więc Automatycznemu Twórcy, wygenerować odpowiedni tekst.
+        Od niego zależy, który tekst zostanie zapisany i ostatecznie uznany za 'Dzieło'.
+        Zapisane Teksty Xemantyczne są dostępne i aktualizowane w czasie rzeczywistym w Bazie Xemantycznych Haiku,
+        którą można przeglądać po prawej stronie ekranu.
+      Haiku sobie również wydrukować, korzystając z opcji 'DRUKUJ'.
+      </p>
+    );
+  }
+
+  renderCredo() {
+    return (
+      <blockquote className="blockquote-reverse blue some-text">
+        <p>I jeśli gra się wciąż sto, tysiąc, sto tysięcy lat, to wedle wszelkiego
+          prawdopodobieństwa kiedyś przypadkiem musi z tego wyjść wiersz.</p>
+        <footer>Ende Michale 'Niekończąca się historia'</footer>
+      </blockquote>
+    );
+  }
   render() {
     let onSubmit = (p: GenerateHaikuParams) => this.generateSentences(p);
     return (
@@ -111,27 +140,48 @@ class App extends React.Component<{}, ApplicationState> {
         <div className="example-screen">
           <Container fluid={true}>
             <div className="App container">
-              <Navbar>
-                <NavbarBrand>Generator Haiku</NavbarBrand>
+              <Navbar className="sticky-top">
+                <NavbarBrand>Wystawa Interaktywnej Xemantyki Automatycznej: Generator Haiku</NavbarBrand>
               </Navbar>
               <Row>
                 <Col>
-                  {this.renderCurrentHaikuRow()}
                   <Row>
-                    <Col>
-                      <GenerateHaikuForm
-                        onSubmit={onSubmit}
-                      />
-                    </Col>
-                    <Col>
-                      {this.renderPrintButton()}
-                    </Col>
-                    <Col>
-                      {this.renderSaveButton()}
-                    </Col>
+                    {this.renderCredo()}
+                  </Row>
+                  <div className="fixed-div">
+                    <Row>
+                      <Col>
+                        {this.renderCurrentHaikuRow()}
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col>
+                        <GenerateHaikuForm
+                          onSubmit={onSubmit}
+                        />
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col>
+                        {this.renderPrintButton()}
+                      </Col>
+                      <Col>
+                        {this.renderSaveButton()}
+                      </Col>
+                    </Row>
+                  </div>
+                  <Row />
+
+                  <Row className="instruction">
+                    {this.renderInstruction()}
                   </Row>
                 </Col>
-                <Col>
+                <Col className="scrollable">
+                  <Row>
+                    <Col>
+                      <h1>Baza Xemantycznych Haiku</h1>
+                    </Col>
+                  </Row>
                   <Row>
                     {this.renderSavedHaikus()}
                   </Row>
