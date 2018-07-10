@@ -13,12 +13,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 interface ApplicationState {
   newestHaiku: Maybe<Haiku>;
   generatedHaikus: Array<Haiku>;
+  showSaveButton: boolean;
 }
 
 class App extends React.Component<{}, ApplicationState> {
   constructor(props: {}) {
     super(props);
-    this.state = { generatedHaikus: [], newestHaiku: Maybe.nothing<Haiku>() };
+    this.state = { generatedHaikus: [], newestHaiku: Maybe.nothing<Haiku>(), showSaveButton: false };
   }
 
   componentWillMount() {
@@ -34,13 +35,13 @@ class App extends React.Component<{}, ApplicationState> {
   }
   generateSentences(params: GenerateHaikuParams): void {
     HaikuApi.generateHaiku(params).then(haiku => {
-      this.setState({ newestHaiku: Maybe.just(haiku) });
+      this.setState({ newestHaiku: Maybe.just(haiku), showSaveButton: true });
     });
   }
 
   addToOldHaiku(haiku: Haiku): void {
     this.setState(prevState => ({
-      generatedHaikus: [haiku, ...prevState.generatedHaikus]
+      generatedHaikus: [haiku, ...prevState.generatedHaikus], showSaveButton: false
     }));
   }
   saveHaiku(haiku: Haiku): void {
@@ -75,7 +76,7 @@ class App extends React.Component<{}, ApplicationState> {
   }
   renderSaveButton() {
     return this.state.newestHaiku.bind(haiku => {
-      if (this.state.generatedHaikus.indexOf(haiku) > -1) {
+      if (!this.state.showSaveButton) {
         return Maybe.nothing<Haiku>();
       } else {
         return Maybe.just(haiku);
